@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'dart:math' as m;
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:pavopackage/constant/enum.dart';
 import 'package:pavopackage/model/pv_sales_request_model.dart';
@@ -39,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    const orderNo = '231e2rklo342r043r0340r031dw99';
+    final orderNo = '231e2rklo342r0${m.Random().nextInt(100000)}';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -76,6 +78,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> sale(String orderNo) async {
+    final deviceInfo = DeviceInfoPlugin();
+    final androidDeviceInfo = await deviceInfo.androidInfo;
     final req = PVSalesRequestModel(
       orderNo: orderNo,
       showCreditCardMenu: false,
@@ -96,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
         printMerchantReceipt: false,
         enableExchangeRateField: false,
       ),
-      selectedSlots: ["rf", "icc", "magneticStripe", "qr", "manual"],
+      selectedSlots: PVPaymentSlotType.values.map((e) => e.name).toList(),
       allowDismissCardRead: true,
       skipAmountCash: true,
       askCustomer: false,
@@ -115,15 +119,54 @@ class _MyHomePageState extends State<MyHomePage> {
         )
       ],
       paymentInformations: [
-        PVSaleRequestPaymentInformationModel(mediator: PVPaymentType.KrediKarti.type, amount: 1),
+        PVSaleRequestPaymentInformationModel(mediator: PVPaymentType.Nakit.type, amount: 1),
       ],
       allowedPaymentMediators: [
-        PVSaleRequestPaymentAllowedPaymentMediatorModel(mediator: PVPaymentType.KrediKarti.type),
+        PVSaleRequestPaymentAllowedPaymentMediatorModel(mediator: PVPaymentType.Nakit.type),
       ],
       referOtherMediatorsToRetryPayment: false,
       additionalInfo: [],
-      topPrintibleItems: [],
-      bottomPrintibleItems: [],
+      topPrintableItems: [
+        PVSalePrinterModel(
+          type: PVPrinterDataType.dText,
+          isCenter: true,
+          size: 34,
+          isBold: true,
+          text: "SR Döner",
+        ),
+        PVSalePrinterModel(
+          type: PVPrinterDataType.dSpace,
+          size: 10,
+        ),
+        PVSalePrinterModel(
+          type: PVPrinterDataType.dLine,
+          size: 50,
+        ),
+      ],
+      bottomPrintableItems: [
+        PVSalePrinterModel(
+          type: PVPrinterDataType.dLine,
+          size: 50,
+        ),
+        PVSalePrinterModel(
+          type: PVPrinterDataType.dSpace,
+          size: 10,
+        ),
+        PVSalePrinterModel(
+          type: PVPrinterDataType.dText,
+          isCenter: true,
+          size: 34,
+          isBold: true,
+          text: "SR Döner",
+        ),
+        PVSalePrinterModel(
+          type: PVPrinterDataType.dText,
+          isCenter: true,
+          size: 22,
+          isBold: true,
+          text: "Abdurrahmangazi, Fatih Blv. No: 114/B, 34920 Sultanbeyli/İstanbul",
+        ),
+      ],
     );
     final res = await PavoPosPackage().sale(modelReq: req);
     resultText = res.ourOperationIsSuccess == true ? 'Staış Başarılı' : 'Staış Başarısızı: ${res.message}';

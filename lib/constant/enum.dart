@@ -31,6 +31,8 @@ enum PVStatusId {
 // Kart ekranında görüntülenmesi istenilen slot tipleridir. Gönderilmediği veya boş [] gönderildiği durumda tüm slotlar gösterilir. Geçerli slot tipleri -> “rf” Temassız, “icc” Çip, “magneticStripe” Manyetik, “qr” Karekod, “manual” Manuel.
 enum PVPaymentSlotType { rf, icc, magneticStripe, qr, manual }
 
+enum PVPrinterDataType { dSpace, dLine, dText }
+
 enum PVPaymentType {
   Nakit(1),
   KrediKarti(2),

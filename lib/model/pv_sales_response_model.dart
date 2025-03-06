@@ -308,6 +308,7 @@ class PvSalesResponseAddedPaymentModel {
   int? paymentMediatorId;
   PvSalesResponsePaymentMediatorModel? paymentMediator;
   PvSalesResponseCashPaymentModel? cashPayment;
+  PvSalesResponseOnlinePaymentModel? onlinePayment;
   List<PvSalesResponseItemPaymentModel>? itemPayments;
   String? tempId;
   int? operationTypeId;
@@ -342,6 +343,7 @@ class PvSalesResponseAddedPaymentModel {
     this.paymentMediatorId,
     this.paymentMediator,
     this.cashPayment,
+    this.onlinePayment,
     this.itemPayments,
     this.tempId,
     this.operationTypeId,
@@ -379,6 +381,8 @@ class PvSalesResponseAddedPaymentModel {
             ? null
             : PvSalesResponsePaymentMediatorModel.fromJson(json["PaymentMediator"]),
         cashPayment: json["CashPayment"] == null ? null : PvSalesResponseCashPaymentModel.fromJson(json["CashPayment"]),
+        onlinePayment:
+            json["OnlinePayment"] == null ? null : PvSalesResponseOnlinePaymentModel.fromJson(json["OnlinePayment"]),
         itemPayments: json["ItemPayments"] == null
             ? []
             : List<PvSalesResponseItemPaymentModel>.from(
@@ -417,6 +421,7 @@ class PvSalesResponseAddedPaymentModel {
         "PaymentMediatorId": paymentMediatorId,
         "PaymentMediator": paymentMediator?.toJson(),
         "CashPayment": cashPayment?.toJson(),
+        "OnlinePayment": onlinePayment?.toJson(),
         "ItemPayments": itemPayments == null ? [] : List<dynamic>.from(itemPayments!.map((x) => x.toJson())),
         "TempId": tempId,
         "OperationTypeId": operationTypeId,
@@ -430,6 +435,74 @@ class PvSalesResponseAddedPaymentModel {
         "ConvertedTotal": convertedTotal,
         "CurrencyCode": currencyCode,
         "MediatorPaymentReference": mediatorPaymentReference,
+      };
+}
+
+class PvSalesResponseOnlinePaymentModel {
+  int? id;
+  int? paymentId;
+  int? saleId;
+  int? paymentMediatorId;
+  String? cardNo;
+  String? transactionNo;
+  String? batchNo;
+  String? authorizationCode;
+  String? online;
+  String? acquirerTransaction;
+  String? acquirerName;
+  String? acquirerId;
+  String? responseCode;
+  String? additionalData;
+
+  PvSalesResponseOnlinePaymentModel({
+    this.id,
+    this.paymentId,
+    this.saleId,
+    this.paymentMediatorId,
+    this.cardNo,
+    this.transactionNo,
+    this.batchNo,
+    this.authorizationCode,
+    this.online,
+    this.acquirerTransaction,
+    this.acquirerName,
+    this.acquirerId,
+    this.responseCode,
+    this.additionalData,
+  });
+
+  factory PvSalesResponseOnlinePaymentModel.fromJson(Map<String, dynamic> json) => PvSalesResponseOnlinePaymentModel(
+        id: json["Id"],
+        paymentId: json["PaymentId"],
+        saleId: json["SaleId"],
+        paymentMediatorId: json["PaymentMediatorId"],
+        cardNo: json["CardNo"],
+        transactionNo: json["TransactionNo"],
+        batchNo: json["BatchNo"],
+        authorizationCode: json["AuthorizationCode"],
+        online: json["Online"],
+        acquirerTransaction: json["AcquirerTransaction"],
+        acquirerName: json["AcquirerName"],
+        acquirerId: json["AcquirerId"],
+        responseCode: json["ResponseCode"],
+        additionalData: json["AdditionalData"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "Id": id,
+        "PaymentId": paymentId,
+        "SaleId": saleId,
+        "PaymentMediatorId": paymentMediatorId,
+        "CardNo": cardNo,
+        "TransactionNo": transactionNo,
+        "BatchNo": batchNo,
+        "AuthorizationCode": authorizationCode,
+        "Online": online,
+        "AcquirerTransaction": acquirerTransaction,
+        "AcquirerName": acquirerName,
+        "AcquirerId": acquirerId,
+        "ResponseCode": responseCode,
+        "AdditionalData": additionalData,
       };
 }
 

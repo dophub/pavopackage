@@ -69,17 +69,17 @@ class PVSalesRequestModel extends IBaseModel<PVSalesRequestModel> {
   final List<Map<String, dynamic>> additionalInfo;
 
   /// Satış fişi üst bilgileri
-  final List<Map<String, dynamic>> topPrintibleItems;
+  final List<PVSalePrinterModel> topPrintableItems;
 
   /// Satış fişi alt bilgileri
-  final List<Map<String, dynamic>> bottomPrintibleItems;
+  final List<PVSalePrinterModel> bottomPrintableItems;
 
   PVSalesRequestModel({
     required this.orderNo,
     this.showCreditCardMenu = false,
     this.mainDocumentType = 1,
-    required this.refererApp,
-    required this.refererAppVersion,
+    this.refererApp = 'dop',
+    this.refererAppVersion = '1.0.0',
     required this.grossPrice,
     required this.totalPrice,
     this.sendPhoneNotification = false,
@@ -96,8 +96,8 @@ class PVSalesRequestModel extends IBaseModel<PVSalesRequestModel> {
     final List<PVSaleRequestPaymentAllowedPaymentMediatorModel>? allowedPaymentMediators,
     this.referOtherMediatorsToRetryPayment = false,
     this.additionalInfo = const [],
-    this.topPrintibleItems = const [],
-    this.bottomPrintibleItems = const [],
+    this.topPrintableItems = const [],
+    this.bottomPrintableItems = const [],
   }) {
     this.selectedSlots = selectedSlots ?? PVPaymentSlotType.values.map((e) => e.name).toList();
     this.paymentInformations = paymentInformations ??
@@ -131,13 +131,13 @@ class PVSalesRequestModel extends IBaseModel<PVSalesRequestModel> {
         "AskCustomer": askCustomer,
         "TryAgainOnPaymentFailure": tryAgainOnPaymentFailure,
         "InstallmentCount": installmentCount,
+        "ReferOtherMediatorsToRetryPayment": referOtherMediatorsToRetryPayment,
         "AddedSaleItems": List<dynamic>.from(addedSaleItems.map((x) => x.toJson())),
         "PaymentInformations": List<dynamic>.from(paymentInformations.map((x) => x.toJson())),
         "AllowedPaymentMediators": List<dynamic>.from(allowedPaymentMediators.map((x) => x.toJson())),
-        "ReferOtherMediatorsToRetryPayment": referOtherMediatorsToRetryPayment,
         "AdditionalInfo": List<dynamic>.from(additionalInfo.map((x) => x)),
-        "TopPrintibleItems": List<dynamic>.from(topPrintibleItems.map((x) => x)),
-        "BottomPrintibleItems": List<dynamic>.from(bottomPrintibleItems.map((x) => x)),
+        "TopPrintableItems": List<dynamic>.from(topPrintableItems.map((x) => x.toJson())),
+        "BottomPrintableItems": List<dynamic>.from(bottomPrintableItems.map((x) => x.toJson())),
       };
 
   @override
@@ -299,5 +299,43 @@ class PVSaleRequestPaymentAllowedPaymentMediatorModel {
 
   Map<String, dynamic> toJson() => {
         "Mediator": mediator,
+      };
+}
+
+class PVSalePrinterModel {
+  PVPrinterDataType type;
+  bool? isCenter;
+  int? size;
+  bool? isBold;
+  String? text;
+
+  PVSalePrinterModel({
+    required this.type,
+    this.isCenter,
+    this.size,
+    this.isBold,
+    this.text,
+  });
+
+  factory PVSalePrinterModel.fromJson(Map<String, dynamic> json) => PVSalePrinterModel(
+        type: PVPrinterDataType.values.firstWhere((e) => e.name == json["type"], orElse: () => PVPrinterDataType.dText),
+        isCenter: json["alignment"] == 'center',
+        size: json["type"] == PVPrinterDataType.dText
+            ? json["fontSize"]
+            : json["type"] == PVPrinterDataType.dLine
+                ? json["dashWidth"]
+                : json["height"],
+        text: json["text"],
+        isBold: json["fontWeight"] == 'bold',
+      );
+
+  Map<String, dynamic> toJson() => {
+        "type": type.name,
+        "alignment": isCenter == true ? 'center' : null,
+        if (type == PVPrinterDataType.dSpace) "height": size,
+        if (type == PVPrinterDataType.dText) "fontSize": size,
+        if (type == PVPrinterDataType.dLine) "dashWidth": size,
+        "text": text,
+        "fontWeight": isBold == true ? 'bold' : null,
       };
 }

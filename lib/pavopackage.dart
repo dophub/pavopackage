@@ -15,11 +15,14 @@ import 'model/pv_sales_request_model.dart';
 import 'model/pv_sales_response_model.dart';
 
 /// A Calculator.
+///
+typedef _ResFun = void Function(PvSalesResponseModel res);
+
 class PavoPosPackage {
   static PavoPosPackage? _instance;
   final String _package = 'tr.com.overtech.overpay_pos_demo';
   late StreamSubscription<Intent?> _intentSubscription;
-  final HashMap<String, void Function(PvSalesResponseModel res)> _listener = HashMap();
+  final HashMap<String, _ResFun> _listener = HashMap();
 
   factory PavoPosPackage() => _instance ??= PavoPosPackage._();
 
@@ -29,9 +32,10 @@ class PavoPosPackage {
         if (intent == null) return;
         log(intent.extra.toString(), name: '<--------- PAVO');
         try {
-          final PvSalesResponseModel response = PvSalesResponseModel().jsonParserByMap(intent.extra);
-          final fun = _listener[intent.action!]!;
+          final _ResFun? fun = _listener[intent.action!];
+          if (fun == null) return;
           _listener.remove(intent.action!);
+          final PvSalesResponseModel response = PvSalesResponseModel().jsonParserByMap(intent.extra);
           fun.call(response);
         } catch (e) {
           final fun = _listener[intent.action!]!;
@@ -54,7 +58,7 @@ class PavoPosPackage {
     assert(modelReq != null || mapReq != null);
     const action = 'pavopay.intent.action.complete.sale';
     const actionResult = '$action.result';
-    final packageName = (await PackageInfo.fromPlatform()).packageName;
+    final appInfo = await PackageInfo.fromPlatform();
     final completer = Completer<PvSalesResponseModel>();
 
     _listener[actionResult] = (PvSalesResponseModel res) {
@@ -63,6 +67,12 @@ class PavoPosPackage {
     };
 
     final requestMap = modelReq?.toJson() ?? mapReq!;
+    final String appName = appInfo.appName;
+    final String version = '(${appInfo.version})+${appInfo.buildNumber}';
+
+    requestMap['RefererApp'] = appName;
+    requestMap['RefererAppVersion'] = version;
+
     AndroidIntent(
       type: 'application/json',
       package: _package,
@@ -70,7 +80,7 @@ class PavoPosPackage {
       flags: [0x10000000],
       arguments: <String, dynamic>{
         'Sale': jsonEncode(requestMap),
-        'packageName': packageName,
+        'packageName': appInfo.packageName,
       },
     ).launch();
 
