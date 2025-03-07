@@ -75,6 +75,10 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => getDeviceInfo(orderNo),
               child: const Text("get device info"),
             ),
+            ElevatedButton(
+              onPressed: () => getDeviceSerialNumber(orderNo),
+              child: const Text("get device SN"),
+            ),
           ],
         ),
       ),
@@ -197,5 +201,9 @@ class _MyHomePageState extends State<MyHomePage> {
     resultText = res.ourOperationIsSuccess == true ? 'İşlem Başarılı' : 'Staış Başarısız: ${res.message}';
     setState(() {});
     log('example log: ', name: res.toJson().toString());
+  }
+
+  Future<void> getDeviceSerialNumber(String orderNo) async {
+    final res = await PavoPosPackage().getDeviceSerialNumber();
   }
 }

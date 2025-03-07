@@ -7,6 +7,7 @@ import 'dart:developer';
 
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pavopackage/constant/enum.dart';
 import 'package:receive_intent/receive_intent.dart';
@@ -19,6 +20,8 @@ import 'model/pv_sales_response_model.dart';
 typedef _ResFun = void Function(PvSalesResponseModel res);
 
 class PavoPosPackage {
+  @visibleForTesting
+  final methodChannel = const MethodChannel('pavopackage');
   static PavoPosPackage? _instance;
   final String _package = 'tr.com.overtech.overpay_pos_demo';
   late StreamSubscription<Intent?> _intentSubscription;
@@ -219,5 +222,9 @@ class PavoPosPackage {
     } catch (e) {
       return false;
     }
+  }
+
+  Future getDeviceSerialNumber() async {
+    return await methodChannel.invokeMethod<String>('getSerialNumber');
   }
 }
