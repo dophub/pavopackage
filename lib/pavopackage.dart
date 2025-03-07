@@ -159,6 +159,44 @@ class PavoPosPackage {
     return completer.future;
   }
 
+  Future<PvSalesResponseModel> getDeviceInfo(String orderNo) async {
+    const action = 'pavopay.intent.action.get.device.info';
+    const actionResult = '$action.result';
+    final packageName = (await PackageInfo.fromPlatform()).packageName;
+    final completer = Completer<PvSalesResponseModel>();
+
+    _listener[actionResult] = (PvSalesResponseModel res) {
+      res.ourOperationIsSuccess = res.hasError == false;
+      completer.complete(res);
+    };
+
+    final requestMap = {
+      "DeviceInfo": {
+        "AdditionalInfo": {
+          "serialNumber": true,
+          "fingerPrint": true,
+          "terminalSettings": true,
+          "listTerminals": true,
+          "networkStatus": true
+        }
+      }
+    };
+
+    AndroidIntent(
+      type: 'application/json',
+      package: _package,
+      action: action,
+      flags: [0x10000000],
+      arguments: <String, dynamic>{
+        'Sale': jsonEncode(requestMap),
+        'packageName': packageName,
+      },
+    ).launch();
+
+    log(requestMap.toString(), name: '---------> PAVO');
+    return completer.future;
+  }
+
   bool _isSuccess(PvSalesResponseModel res, {PaymentStatusId? paymentStatusId, PVStatusId? pvStatusId}) {
     assert(paymentStatusId != null || pvStatusId != null);
     try {

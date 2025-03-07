@@ -29,6 +29,7 @@
                 <action android:name="pavopay.intent.action.complete.sale.result" />
                 <action android:name="pavopay.intent.action.completed.sale.result" />
                 <action android:name="pavopay.intent.action.cancel.sale.result" />
+                <action android:name="pavopay.intent.action.get.device.info.result" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="application/json" />

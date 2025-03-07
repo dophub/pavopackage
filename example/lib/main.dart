@@ -71,6 +71,10 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => getSaleDetail(orderNo),
               child: const Text("get sale detail"),
             ),
+            ElevatedButton(
+              onPressed: () => getDeviceInfo(orderNo),
+              child: const Text("get device info"),
+            ),
           ],
         ),
       ),
@@ -183,6 +187,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> getSaleDetail(String orderNo) async {
     final res = await PavoPosPackage().getSaleDetail(orderNo);
+    resultText = res.ourOperationIsSuccess == true ? 'İşlem Başarılı' : 'Staış Başarısız: ${res.message}';
+    setState(() {});
+    log('example log: ', name: res.toJson().toString());
+  }
+
+  Future<void> getDeviceInfo(String orderNo) async {
+    final res = await PavoPosPackage().getDeviceInfo(orderNo);
     resultText = res.ourOperationIsSuccess == true ? 'İşlem Başarılı' : 'Staış Başarısız: ${res.message}';
     setState(() {});
     log('example log: ', name: res.toJson().toString());
