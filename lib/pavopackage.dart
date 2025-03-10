@@ -87,7 +87,7 @@ class PavoPosPackage {
       },
     ).launch();
 
-    log(requestMap.toString(), name: '---------> PAVO');
+    log(jsonEncode(requestMap), name: '---------> PAVO');
     return completer.future;
   }
 
