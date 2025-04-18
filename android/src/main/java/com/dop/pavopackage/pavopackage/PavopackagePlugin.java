@@ -21,7 +21,6 @@ import android.content.Context;
  * PavopackagePlugin
  */
 public class PavopackagePlugin implements FlutterPlugin, MethodCallHandler {
-    private DeviceEngine deviceEngine;
     Context applicationContext;
     private MethodChannel channel;
 
@@ -30,12 +29,12 @@ public class PavopackagePlugin implements FlutterPlugin, MethodCallHandler {
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "pavopackage");
         channel.setMethodCallHandler(this);
         applicationContext = flutterPluginBinding.getApplicationContext();
-        deviceEngine = APIProxy.getDeviceEngine(applicationContext);
     }
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
         if (call.method.equals("getSerialNumber")) {
+            DeviceEngine deviceEngine = APIProxy.getDeviceEngine(applicationContext);
             DeviceInfo deviceInfo = deviceEngine.getDeviceInfo();
             String sn = deviceInfo.getSn();
             log("PAVO SN:", sn);
