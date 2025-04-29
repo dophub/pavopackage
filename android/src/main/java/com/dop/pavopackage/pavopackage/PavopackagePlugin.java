@@ -15,7 +15,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 
 import android.content.Context;
-
+import android.content.pm.PackageManager;
 
 /**
  * PavopackagePlugin
@@ -39,6 +39,10 @@ public class PavopackagePlugin implements FlutterPlugin, MethodCallHandler {
             String sn = deviceInfo.getSn();
             log("PAVO SN:", sn);
             result.success(sn);
+        } else if (call.method.equals("isAppInstalled")) {
+            String packageName = call.argument("packageName");
+            boolean isInstalled = isAppInstalled(packageName);
+            result.success(isInstalled);
         } else {
             result.notImplemented();
         }
@@ -47,6 +51,16 @@ public class PavopackagePlugin implements FlutterPlugin, MethodCallHandler {
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
         channel.setMethodCallHandler(null);
+    }
+
+    private boolean isAppInstalled(String packageName) {
+        try {
+            PackageManager pm = applicationContext.getPackageManager();
+            pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 
     void log(String tag, String msg) {

@@ -23,7 +23,8 @@ class PavoPosPackage {
   @visibleForTesting
   final methodChannel = const MethodChannel('pavopackage');
   static PavoPosPackage? _instance;
-  final String _package = 'tr.com.overtech.overpay_pos_demo';
+  final String _package = 'tr.com.overtech.overpay_nkolay';
+  final String _devPackage = 'tr.com.overtech.overpay_pos_demo';
   late StreamSubscription<Intent?> _intentSubscription;
   final HashMap<String, _ResFun> _listener = HashMap();
 
@@ -224,7 +225,21 @@ class PavoPosPackage {
     }
   }
 
-  Future getDeviceSerialNumber() async {
-    return await methodChannel.invokeMethod<String>('getSerialNumber');
+  Future<String?> getDeviceSerialNumber() async {
+    try {
+      return await methodChannel.invokeMethod<String>('getSerialNumber');
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<bool?> isAppInstalled() async {
+    try {
+      bool result = await methodChannel.invokeMethod('isAppInstalled', {'packageName': _package});
+      if (result == false) result = await methodChannel.invokeMethod('isAppInstalled', {'packageName': _devPackage});
+      return result;
+    } catch (_) {
+      return false;
+    }
   }
 }
