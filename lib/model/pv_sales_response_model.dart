@@ -74,6 +74,7 @@ class PvSalesResponseDataModel {
   List<PvSalesResponseAddedPaymentModel>? addedPayments;
   String? gmuVersion;
   String? saleNumber;
+  String? saleInquieryLink;
   List<dynamic>? addedPriceEffects;
   List<PvSalesResponseFinancialDocumentModel>? financialDocuments;
   bool? isOffline;
@@ -131,6 +132,7 @@ class PvSalesResponseDataModel {
     this.addedPayments,
     this.gmuVersion,
     this.saleNumber,
+    this.saleInquieryLink,
     this.addedPriceEffects,
     this.financialDocuments,
     this.isOffline,
@@ -197,6 +199,7 @@ class PvSalesResponseDataModel {
                 json["AddedPayments"]!.map((x) => PvSalesResponseAddedPaymentModel.fromJson(x))),
         gmuVersion: json["GMUVersion"],
         saleNumber: json["SaleNumber"],
+        saleInquieryLink: json["SaleInquieryLink"],
         addedPriceEffects:
             json["AddedPriceEffects"] == null ? [] : List<dynamic>.from(json["AddedPriceEffects"]!.map((x) => x)),
         financialDocuments: json["FinancialDocuments"] == null
@@ -261,6 +264,7 @@ class PvSalesResponseDataModel {
         "AddedPayments": addedPayments == null ? [] : List<dynamic>.from(addedPayments!.map((x) => x.toJson())),
         "GMUVersion": gmuVersion,
         "SaleNumber": saleNumber,
+        "SaleInquieryLink": saleInquieryLink,
         "AddedPriceEffects": addedPriceEffects == null ? [] : List<dynamic>.from(addedPriceEffects!.map((x) => x)),
         "FinancialDocuments":
             financialDocuments == null ? [] : List<dynamic>.from(financialDocuments!.map((x) => x.toJson())),
