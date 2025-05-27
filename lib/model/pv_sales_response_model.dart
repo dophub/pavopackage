@@ -199,7 +199,7 @@ class PvSalesResponseDataModel {
                 json["AddedPayments"]!.map((x) => PvSalesResponseAddedPaymentModel.fromJson(x))),
         gmuVersion: json["GMUVersion"],
         saleNumber: json["SaleNumber"],
-        saleInquieryLink: json["SaleInquieryLink"],
+        saleInquieryLink: json["SaleInquieryLink "] ?? json["SaleInquieryLink"],
         addedPriceEffects:
             json["AddedPriceEffects"] == null ? [] : List<dynamic>.from(json["AddedPriceEffects"]!.map((x) => x)),
         financialDocuments: json["FinancialDocuments"] == null
