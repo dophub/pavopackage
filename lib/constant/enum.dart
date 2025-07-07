@@ -78,24 +78,25 @@ enum PaymentMediatorType {
 }
 
 enum PaymentStatusId {
-  WaitingPayment(1), // Ödeme bekleniyor
-  Completed(2), // Ödeme işlemi tamamlandı
-  Failed(3), // Ödeme işlemi tamamlanamadı.
-  WaitingCancel(4), // Ödeme iptali bekleniyor
-  Cancelled(5), // Ödeme iptal edildi
-  CancelFailed(6), // İptal işlemi yapılamadı
-  Abandoned(7), // Ödeme terk edildi
-  CancelAbandoned(8), // Ödeme iptali terk edildi
-  InProgress(9), // Ödeme işleminde
-  CompletePayment(10), // Ödeme alındı
-  FailPayment(11), // Ödeme başarısız
-  CompleteCancel(12), // Ödeme iptali tamamlandı
-  FailCancel(13), // Ödeme iptali başarısız
-  Abandon(14), // Ödeme terk ediliyor
-  WaitingForReversal(15), // Reversal işlemler için bekleniyor
-  CancelPending(16); // Ödeme iptali bekleniyor
+  WaitingPayment(1, 'Ödeme Bekleniyor'),
+  Completed(2, 'Ödeme Tamamlandı'),
+  Failed(3, 'Ödeme Başarısız'),
+  WaitingCancel(4, 'İptal Bekleniyor'),
+  Cancelled(5, 'İptal Edildi'),
+  CancelFailed(6, 'İptal Başarısız'),
+  Abandoned(7, 'Ödemeden Vazgeçildi'),
+  CancelAbandoned(8, 'İptalden Vazgeçildi'),
+  InProgress(9, 'Ödeme İşlemde'),
+  CompletePayment(10, 'Ödeme Alındı'),
+  FailPayment(11, 'Ödeme Başarısız'),
+  CompleteCancel(12, 'İptal Tamamlandı'),
+  FailCancel(13, 'İptal Başarısız'),
+  Abandon(14, 'Ödemeden Vazgeçiliyor'),
+  WaitingForReversal(15, 'Ters İşlem Bekleniyor'),
+  CancelPending(16, 'İptal Bekleniyor');
 
   final int id;
+  final String title;
 
-  const PaymentStatusId(this.id);
+  const PaymentStatusId(this.id, this.title);
 }
