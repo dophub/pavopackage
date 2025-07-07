@@ -67,6 +67,7 @@ class PavoPosPackage {
 
     _listener[actionResult] = (PvSalesResponseModel res) {
       res.ourOperationIsSuccess = _isSuccess(res, paymentStatusId: PaymentStatusId.Completed);
+      res.message = _getMessageFromPaymentStatus(res);
       completer.complete(res);
     };
 
@@ -240,6 +241,16 @@ class PavoPosPackage {
       return result;
     } catch (_) {
       return false;
+    }
+  }
+
+  String? _getMessageFromPaymentStatus(PvSalesResponseModel res) {
+    try {
+      if ((res.message != null && res.message!.trim().isEmpty == false)) return res.message;
+      final statusId = res.data?.addedPayments?.firstOrNull?.statusId;
+      return PaymentStatusId.values.firstWhere((type) => type.id == statusId).title;
+    } catch (e) {
+      return null;
     }
   }
 }
