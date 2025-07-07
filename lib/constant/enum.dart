@@ -1,32 +1,34 @@
 enum PVStatusId {
-  Suspended(1), //	Satış askıya alındı
-  PaymentWaiting(2), //	Ödeme bakliyor
-  DocumentCreating(3), //	Döküman oluşturuluyor
-  DocumentPending(4), //	Döküman bekleniyor
-  DocumentCreated(5), //	Döküman oluşturuldu
-  Completed(6), //	Tamamlandı
-  Abandoned(7), //	Satıştan vazgeçildi
-  DocumentFailed(8), //	Döküman oluştırulamadı
-  Signing(9), //	İmzalanıyor
-  SigningFailed(10), //	İmzalama işlemi başarısız
-  Cancalled(11), //	İptal edildi
-  PaymentCancelling(12), //	Ödemeler iptal ediliyor
-  PaymentCancelled(13), //	Ödemeler iptal edildi
-  PaymentCancelFailed(14), //	Ödeme iptali geerçekleştirilemedi
-  DocumentCancelling(15), //	Döküman iptal ediliyor
-  DocumentCancelFailed(16), //	Döküman iptlai gerçekleştirilemedi
-  DocumentCancelPending(17), //	Döküman iptali bekleniyor
-  Signed(18), //	İmzalandı
-  ERPProcessing(19), //	ERP operasyonlarında
-  DocumentApproved(20), //	Döküman onaylandı
-  DocumentNotApproved(21), //	Döküman onaylanmadı
-  InspectionPending(22), //	Inspection bekleniyor
-  UnCompletedSale(23); //	Tamamlanmamış satış
+  Suspended(1, 'Satış Askıya Alındı'),
+  PaymentWaiting(2, 'Ödeme Bekleniyor'),
+  DocumentCreating(3, 'Döküman Oluşturuluyor'),
+  DocumentPending(4, 'Döküman Bekleniyor'),
+  DocumentCreated(5, 'Döküman Oluşturuldu'),
+  Completed(6, 'Tamamlandı'),
+  Abandoned(7, 'Satıştan Vazgeçildi'),
+  DocumentFailed(8, 'Döküman Oluşturulamadı'),
+  Signing(9, 'İmzalanıyor'),
+  SigningFailed(10, 'İmzalama Başarısız'),
+  Cancalled(11, 'İptal Edildi'),
+  PaymentCancelling(12, 'Ödeme İptali Gerçekleştiriliyor'),
+  PaymentCancelled(13, 'Ödeme İptali Tamamlandı'),
+  PaymentCancelFailed(14, 'Ödeme İptali Başarısız'),
+  DocumentCancelling(15, 'Döküman İptali Gerçekleştiriliyor'),
+  DocumentCancelFailed(16, 'Döküman İptali Başarısız'),
+  DocumentCancelPending(17, 'Döküman İptali Bekleniyor'),
+  Signed(18, 'İmzalandı'),
+  ERPProcessing(19, 'ERP İşlemleri Devam Ediyor'),
+  DocumentApproved(20, 'Döküman Onaylandı'),
+  DocumentNotApproved(21, 'Döküman Onaylanmadı'),
+  InspectionPending(22, 'İnceleme Bekleniyor'),
+  UnCompletedSale(23, 'Tamamlanmamış Satış');
 
   final int id;
+  final String title;
 
-  const PVStatusId(this.id);
+  const PVStatusId(this.id, this.title);
 }
+
 
 // Kart ekranında görüntülenmesi istenilen slot tipleridir. Gönderilmediği veya boş [] gönderildiği durumda tüm slotlar gösterilir. Geçerli slot tipleri -> “rf” Temassız, “icc” Çip, “magneticStripe” Manyetik, “qr” Karekod, “manual” Manuel.
 enum PVPaymentSlotType { rf, icc, magneticStripe, qr, manual }
