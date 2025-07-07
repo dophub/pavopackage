@@ -246,7 +246,7 @@ class PavoPosPackage {
 
   String? _getMessageFromPaymentStatus(PvSalesResponseModel res) {
     try {
-      if (res.message?.trim().isNotEmpty != true) return res.message;
+      if (res.message?.trim().isNotEmpty == true) return res.message;
       final statusId = res.data?.statusId;
       return PVStatusId.values.firstWhere((type) => type.id == statusId).title;
     } catch (e) {
