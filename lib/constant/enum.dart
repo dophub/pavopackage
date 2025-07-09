@@ -79,7 +79,7 @@ enum PaymentMediatorType {
   const PaymentMediatorType(this.type, this.paymentType);
 }
 
-enum PaymentStatusId {
+enum PavoPaymentStatusId {
   WaitingPayment(1, 'Ödeme Bekleniyor'),
   Completed(2, 'Ödeme Tamamlandı'),
   Failed(3, 'Ödeme Başarısız'),
@@ -100,5 +100,5 @@ enum PaymentStatusId {
   final int id;
   final String title;
 
-  const PaymentStatusId(this.id, this.title);
+  const PavoPaymentStatusId(this.id, this.title);
 }

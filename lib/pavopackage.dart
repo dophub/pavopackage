@@ -66,7 +66,7 @@ class PavoPosPackage {
     final completer = Completer<PvSalesResponseModel>();
 
     _listener[actionResult] = (PvSalesResponseModel res) {
-      res.ourOperationIsSuccess = _isSuccess(res, paymentStatusId: PaymentStatusId.Completed);
+      res.ourOperationIsSuccess = _isSuccess(res, paymentStatusId: PavoPaymentStatusId.Completed);
       res.message = _getMessageFromPaymentStatus(res);
       completer.complete(res);
     };
@@ -95,7 +95,7 @@ class PavoPosPackage {
 
   Future<PvSalesResponseModel> getSaleDetail(
     String orderNo, {
-    PaymentStatusId? paymentStatusId,
+    PavoPaymentStatusId? paymentStatusId,
   }) async {
     const action = 'pavopay.intent.action.completed.sale';
     const actionResult = '$action.result';
@@ -103,7 +103,7 @@ class PavoPosPackage {
     final completer = Completer<PvSalesResponseModel>();
 
     _listener[actionResult] = (PvSalesResponseModel res) {
-      res.ourOperationIsSuccess = _isSuccess(res, paymentStatusId: paymentStatusId ?? PaymentStatusId.Completed);
+      res.ourOperationIsSuccess = _isSuccess(res, paymentStatusId: paymentStatusId ?? PavoPaymentStatusId.Completed);
       completer.complete(res);
     };
 
@@ -205,7 +205,7 @@ class PavoPosPackage {
     return completer.future;
   }
 
-  bool _isSuccess(PvSalesResponseModel res, {PaymentStatusId? paymentStatusId, PVStatusId? pvStatusId}) {
+  bool _isSuccess(PvSalesResponseModel res, {PavoPaymentStatusId? paymentStatusId, PVStatusId? pvStatusId}) {
     assert(paymentStatusId != null || pvStatusId != null);
     try {
       if (res.hasError == false) {
