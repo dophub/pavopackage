@@ -93,14 +93,17 @@ class PavoPosPackage {
     return completer.future;
   }
 
-  Future<PvSalesResponseModel> getSaleDetail(String orderNo) async {
+  Future<PvSalesResponseModel> getSaleDetail(
+    String orderNo, {
+    PaymentStatusId? paymentStatusId,
+  }) async {
     const action = 'pavopay.intent.action.completed.sale';
     const actionResult = '$action.result';
     final packageName = (await PackageInfo.fromPlatform()).packageName;
     final completer = Completer<PvSalesResponseModel>();
 
     _listener[actionResult] = (PvSalesResponseModel res) {
-      res.ourOperationIsSuccess = _isSuccess(res, paymentStatusId: PaymentStatusId.Completed);
+      res.ourOperationIsSuccess = _isSuccess(res, paymentStatusId: paymentStatusId ?? PaymentStatusId.Completed);
       completer.complete(res);
     };
 
