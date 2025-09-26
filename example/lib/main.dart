@@ -8,6 +8,7 @@ import 'package:pavopackage/model/pv_sales_request_model.dart';
 import 'package:pavopackage/pavopackage.dart';
 
 void main() {
+  PavoPosPackage.init('tr.com.overtech.overpay_nkolay');
   runApp(const MyApp());
 }
 
@@ -44,7 +45,10 @@ class _MyHomePageState extends State<MyHomePage> {
     final orderNo = '231e2rklo342r0${m.Random().nextInt(100000)}';
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .inversePrimary,
         title: Text(widget.title),
       ),
       body: SingleChildScrollView(
@@ -176,34 +180,34 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ],
     );
-    final res = await PavoPosPackage().sale(modelReq: req);
+    final res = await PavoPosPackage.instance!.sale(modelReq: req);
     resultText = res.ourOperationIsSuccess == true ? 'Staış Başarılı' : 'Staış Başarısızı: ${res.message}';
     setState(() {});
     log('example log: ', name: res.toJson().toString());
   }
 
   Future<void> cancel(String orderNo) async {
-    final res = await PavoPosPackage().cancelSale(orderNo);
+    final res = await PavoPosPackage.instance!.cancelSale(orderNo);
     resultText = res.ourOperationIsSuccess == true ? 'İade Başarılı' : 'Staış Başarısızı: ${res.message}';
     setState(() {});
     log('example log: ', name: res.toJson().toString());
   }
 
   Future<void> getSaleDetail(String orderNo) async {
-    final res = await PavoPosPackage().getSaleDetail(orderNo);
+    final res = await PavoPosPackage.instance!.getSaleDetail(orderNo);
     resultText = res.ourOperationIsSuccess == true ? 'İşlem Başarılı' : 'Staış Başarısız: ${res.message}';
     setState(() {});
     log('example log: ', name: res.toJson().toString());
   }
 
   Future<void> getDeviceInfo(String orderNo) async {
-    final res = await PavoPosPackage().getDeviceInfo(orderNo);
+    final res = await PavoPosPackage.instance!.getDeviceInfo(orderNo);
     resultText = res.ourOperationIsSuccess == true ? 'İşlem Başarılı' : 'Staış Başarısız: ${res.message}';
     setState(() {});
     log('example log: ', name: res.toJson().toString());
   }
 
   Future<void> getDeviceSerialNumber(String orderNo) async {
-    final res = await PavoPosPackage().getDeviceSerialNumber();
+    final res = await PavoPosPackage.instance!.getDeviceSerialNumber();
   }
 }

@@ -20,17 +20,18 @@ import 'model/pv_sales_response_model.dart';
 typedef _ResFun = void Function(PvSalesResponseModel res);
 
 class PavoPosPackage {
+  // final String _package = 'tr.com.overtech.overpay_nkolay';
+
   @visibleForTesting
   final methodChannel = const MethodChannel('pavopackage');
-  static PavoPosPackage? _instance;
-  final String _package = 'tr.com.overtech.overpay_nkolay';
-  final String _devPackage = 'tr.com.overtech.overpay_pos_demo';
+  static PavoPosPackage? instance;
+  final String _package;
   late StreamSubscription<Intent?> _intentSubscription;
   final HashMap<String, _ResFun> _listener = HashMap();
 
-  factory PavoPosPackage() => _instance ??= PavoPosPackage._();
+  factory PavoPosPackage.init(String package) => instance ??= PavoPosPackage._(package);
 
-  PavoPosPackage._() {
+  PavoPosPackage._(this._package) {
     _intentSubscription = ReceiveIntent.receivedIntentStream.listen(
       (Intent? intent) {
         if (intent == null) return;
@@ -240,7 +241,6 @@ class PavoPosPackage {
   Future<bool?> isAppInstalled() async {
     try {
       bool result = await methodChannel.invokeMethod('isAppInstalled', {'packageName': _package});
-      if (result == false) result = await methodChannel.invokeMethod('isAppInstalled', {'packageName': _devPackage});
       return result;
     } catch (_) {
       return false;
