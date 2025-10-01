@@ -23,7 +23,7 @@ class PavoPosPackage {
   // final String _package = 'tr.com.overtech.overpay_nkolay';
 
   @visibleForTesting
-  final methodChannel = const MethodChannel('pavopackage');
+  static MethodChannel methodChannel = const MethodChannel('pavopackage');
   static PavoPosPackage? instance;
   final String _package;
   late StreamSubscription<Intent?> _intentSubscription;
@@ -238,9 +238,9 @@ class PavoPosPackage {
     }
   }
 
-  Future<bool?> isAppInstalled() async {
+  static Future<bool?> isAppInstalled(String packageName) async {
     try {
-      bool result = await methodChannel.invokeMethod('isAppInstalled', {'packageName': _package});
+      bool result = await methodChannel.invokeMethod('isAppInstalled', {'packageName': packageName});
       return result;
     } catch (_) {
       return false;
