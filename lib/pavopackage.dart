@@ -23,15 +23,29 @@ class PavoPosPackage {
   // final String _package = 'tr.com.overtech.overpay_nkolay';
 
   @visibleForTesting
-  final methodChannel = const MethodChannel('pavopackage');
+  static MethodChannel methodChannel = const MethodChannel('pavopackage');
   static PavoPosPackage? instance;
-  final String _package;
+  final PavoAppType appType;
   late StreamSubscription<Intent?> _intentSubscription;
   final HashMap<String, _ResFun> _listener = HashMap();
 
-  factory PavoPosPackage.init(String package) => instance ??= PavoPosPackage._(package);
+  static Future<PavoPosPackage?> init() async {
+    PavoAppType? appType;
+    for (var e in PavoAppType.values) {
+      if (await isAppInstalled(e.packageName) == true) {
+        appType = e;
+      }
+    }
 
-  PavoPosPackage._(this._package) {
+    if (appType == null) {
+      throw PlatformException(code: '0001', message: 'Kurulu Uygulama bulunamadı');
+    }
+
+    instance ??= PavoPosPackage._(appType);
+    return instance;
+  }
+
+  PavoPosPackage._(this.appType) {
     _intentSubscription = ReceiveIntent.receivedIntentStream.listen(
       (Intent? intent) {
         if (intent == null) return;
@@ -81,7 +95,7 @@ class PavoPosPackage {
 
     AndroidIntent(
       type: 'application/json',
-      package: _package,
+      package: appType.packageName,
       action: action,
       flags: [0x10000000],
       arguments: <String, dynamic>{
@@ -112,7 +126,7 @@ class PavoPosPackage {
 
     AndroidIntent(
       type: 'application/json',
-      package: _package,
+      package: appType.packageName,
       action: action,
       flags: [0x10000000],
       arguments: <String, dynamic>{
@@ -155,7 +169,7 @@ class PavoPosPackage {
 
     AndroidIntent(
       type: 'application/json',
-      package: _package,
+      package: appType.packageName,
       action: action,
       flags: [0x10000000],
       arguments: <String, dynamic>{
@@ -193,7 +207,7 @@ class PavoPosPackage {
 
     AndroidIntent(
       type: 'application/json',
-      package: _package,
+      package: appType.packageName,
       action: action,
       flags: [0x10000000],
       arguments: <String, dynamic>{
@@ -238,9 +252,9 @@ class PavoPosPackage {
     }
   }
 
-  Future<bool?> isAppInstalled() async {
+  static Future<bool?> isAppInstalled(String packageName) async {
     try {
-      bool result = await methodChannel.invokeMethod('isAppInstalled', {'packageName': _package});
+      bool result = await methodChannel.invokeMethod('isAppInstalled', {'packageName': packageName});
       return result;
     } catch (_) {
       return false;
