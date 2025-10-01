@@ -1,3 +1,12 @@
+enum PavoAppType {
+  nKolay('tr.com.overtech.overpay_nkolay'),
+  pavo('tr.com.overtech.overpay_pos');
+
+  final String packageName;
+
+  const PavoAppType(this.packageName);
+}
+
 enum PVStatusId {
   Suspended(1, 'Satış Askıya Alındı'),
   PaymentWaiting(2, 'Ödeme Bekleniyor'),
@@ -28,7 +37,6 @@ enum PVStatusId {
 
   const PVStatusId(this.id, this.title);
 }
-
 
 // Kart ekranında görüntülenmesi istenilen slot tipleridir. Gönderilmediği veya boş [] gönderildiği durumda tüm slotlar gösterilir. Geçerli slot tipleri -> “rf” Temassız, “icc” Çip, “magneticStripe” Manyetik, “qr” Karekod, “manual” Manuel.
 enum PVPaymentSlotType { rf, icc, magneticStripe, qr, manual }

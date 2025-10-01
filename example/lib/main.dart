@@ -8,12 +8,22 @@ import 'package:pavopackage/model/pv_sales_request_model.dart';
 import 'package:pavopackage/pavopackage.dart';
 
 void main() {
-  PavoPosPackage.init('tr.com.overtech.overpay_nkolay');
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    PavoPosPackage.init();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,10 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final orderNo = '231e2rklo342r0${m.Random().nextInt(100000)}';
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
       body: SingleChildScrollView(
