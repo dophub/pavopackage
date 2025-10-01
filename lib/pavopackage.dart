@@ -34,6 +34,7 @@ class PavoPosPackage {
     for (var e in PavoAppType.values) {
       if (await isAppInstalled(e.packageName) == true) {
         appType = e;
+        break;
       }
     }
 
