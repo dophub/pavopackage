@@ -90,6 +90,10 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () => getDeviceSerialNumber(orderNo),
               child: const Text("get device SN"),
             ),
+            ElevatedButton(
+              onPressed: print,
+              child: const Text("Print"),
+            ),
           ],
         ),
       ),
@@ -216,5 +220,15 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> getDeviceSerialNumber(String orderNo) async {
     final res = await PavoPosPackage.instance!.getDeviceSerialNumber();
+  }
+
+  Future<void> print() async {
+    await PavoPosPackage.instance!.initPrinter();
+    await PavoPosPackage.instance!.appendText('Siparisim', align: NexgoAlign.CENTER, size: NexgoFontSize.big);
+    await PavoPosPackage.instance!
+        .appendText('Toplam Tutar', col2: '200.00TL', align: NexgoAlign.CENTER, size: NexgoFontSize.small, bold: true);
+    await PavoPosPackage.instance!.feedPaper(4);
+    await PavoPosPackage.instance!.cutPaper();
+    await PavoPosPackage.instance!.startPrint();
   }
 }

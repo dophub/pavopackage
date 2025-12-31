@@ -1,0 +1,2 @@
+/Users/mustafaturkmen/Documents/project/pavopackage/example/android/app/.cxx/Debug/2x4wz573/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/mustafaturkmen/Documents/project/pavopackage/example/android/app/.cxx/Debug/2x4wz573/armeabi-v7a/CMakeFiles/rebuild_cache.dir
