@@ -1,0 +1,1 @@
+/Users/mustafaturkmen/Documents/project/pavopackage/example/build/app/intermediates/cxx/Debug/4i2b282f/obj/arm64-v8a

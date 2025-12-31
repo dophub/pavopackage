@@ -271,4 +271,142 @@ class PavoPosPackage {
       return null;
     }
   }
+
+  Future<int?> initPrinter() => methodChannel.invokeMethod('initPrinter');
+
+  Future<void> appendText(
+    String col1, {
+    String col2 = '',
+    NexgoFontSize size = NexgoFontSize.normal,
+    NexgoAlign align = NexgoAlign.LEFT,
+    double col1Wight = 0.5,
+    bool bold = false,
+  }) async {
+    assert((0 < col1Wight && col1Wight <= 1));
+
+    final totalChar = size.maxChar;
+
+    if (col2.trim().isEmpty) {
+      await methodChannel.invokeMethod('appendText', {
+        'col1': col1,
+        'col2': '',
+        'fontSize': size.value,
+        'align': align.value,
+        'bold': bold,
+      });
+    } else {
+      final col1Char = (totalChar * col1Wight).ceil();
+      final col2Char = (totalChar * (1 - col1Wight)).ceil();
+
+      final listCol1 = _separationCol(col1, col1Char);
+      final listCol2 = _separationCol(col2, col2Char);
+
+      final int length = listCol1.length > listCol2.length ? listCol1.length : listCol2.length;
+      for (int i = 0; i < length; i++) {
+        await methodChannel.invokeMethod('appendText', {
+          'col1': listCol1.elementAtOrNull(i) ?? '',
+          'col2': listCol2.elementAtOrNull(i) ?? '',
+          'fontSize': size.value,
+          'align': align.value,
+          'bold': bold,
+        });
+      }
+    }
+  }
+
+  List<String> _separationCol(String col, int maxChar) {
+    final List<String> listCol1 = [];
+    if (col.length > maxChar) {
+      String reminder = col.trim();
+      while (reminder.isNotEmpty) {
+        if (reminder.length < maxChar) {
+          listCol1.add(reminder.trim().withoutDiacriticalMarks());
+          break;
+        }
+
+        String chars = reminder.substring(0, maxChar).withoutDiacriticalMarks();
+        reminder = reminder.substring(maxChar);
+
+        if (chars[chars.length - 1] == ' ' || (reminder.isNotEmpty && reminder[0] == ' ')) {
+          chars = chars;
+          reminder = reminder.trim();
+        } else {
+          final char = chars[chars.length - 1];
+          chars = '${chars.substring(0, chars.length - 1)}-';
+          reminder = '$char$reminder'.trim();
+        }
+
+        listCol1.add(chars.trim().withoutDiacriticalMarks());
+        debugPrint(reminder);
+      }
+    } else {
+      listCol1.add(col);
+    }
+
+    return listCol1;
+  }
+
+  Future<int?> appendQR(String text, {int size = 24, NexgoAlign align = NexgoAlign.LEFT}) {
+    text = text.withoutDiacriticalMarks();
+    return methodChannel.invokeMethod('appendQR', {
+      'qr': text,
+      'fontSize': size,
+      'align': align.value,
+    });
+  }
+
+  Future<void> appendSeparator() async {
+    await appendText('──────────────────────');
+  }
+
+  Future<void> feedLine([String? char]) async {
+    final size = NexgoFontSize.big;
+    await appendText(' ' * size.maxChar, size: size);
+  }
+
+  Future<int?> feedPaper([int lines = 1]) {
+    return methodChannel.invokeMethod('feedPaper', {
+      'lines': lines,
+    });
+  }
+
+  Future<int?> cutPaper() {
+    return methodChannel.invokeMethod('cutPaper');
+  }
+
+  Future startPrint() => methodChannel.invokeMethod('startPrint');
+}
+
+extension DiacriticsAwareString on String {
+  String withoutDiacriticalMarks() {
+    const diacritics = 'ÀÁÂÃÄÅàáâãäåÒÓÔÕÕÖØòóôõöøÈÉÊËèéêëðÇçÐÌÍÎÏİìíîïÙÚÛÜùúûüÑñŠšŸÿýŽžıŞşĞğ';
+    const nonDiacritics = 'AAAAAAaaaaaaOOOOOOOooooooEEEEeeeeeCcDIIIIiiiiiUUUUuuuuNnSsYyyZziSsGg';
+
+    return splitMapJoin(
+      '',
+      onNonMatch: (char) =>
+          char.isNotEmpty && diacritics.contains(char) ? nonDiacritics[diacritics.indexOf(char)] : char,
+    );
+  }
+}
+
+enum NexgoFontSize {
+  small(20, 32),
+  normal(24, 27),
+  big(28, 24);
+
+  final int value;
+  final int maxChar;
+
+  const NexgoFontSize(this.value, this.maxChar);
+}
+
+enum NexgoAlign {
+  CENTER(1),
+  RIGHT(2),
+  LEFT(3);
+
+  final int value;
+
+  const NexgoAlign(this.value);
 }
