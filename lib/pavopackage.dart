@@ -12,16 +12,13 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pavopackage/constant/enum.dart';
 import 'package:receive_intent/receive_intent.dart';
 
+import 'constant/extenstion.dart';
 import 'model/pv_sales_request_model.dart';
 import 'model/pv_sales_response_model.dart';
 
-/// A Calculator.
-///
 typedef _ResFun = void Function(PvSalesResponseModel res);
 
 class PavoPosPackage {
-  // final String _package = 'tr.com.overtech.overpay_nkolay';
-
   @visibleForTesting
   static MethodChannel methodChannel = const MethodChannel('pavopackage');
   static PavoPosPackage? instance;
@@ -78,34 +75,109 @@ class PavoPosPackage {
     assert(modelReq != null || mapReq != null);
     const action = 'pavopay.intent.action.complete.sale';
     const actionResult = '$action.result';
+
+    return _startAction(
+      action: action,
+      actionResult: actionResult,
+      mapReq: modelReq?.toJson() ?? mapReq!,
+      isSuccess: (PvSalesResponseModel res) => _isSuccess(res, paymentStatusId: PavoPaymentStatusId.Completed),
+    );
+  }
+
+  Future<PvSalesResponseModel> createPartialOrder(Map<String, dynamic> mapReq) async {
+    const action = 'pavopay.intent.action.start.sale.with.items';
+    const actionResult = '$action.result';
+
+    return _startAction(
+      action: action,
+      actionResult: actionResult,
+      mapReq: mapReq,
+      isSuccess: (PvSalesResponseModel res) => _isSuccess(res, pvStatusId: PVStatusId.UnCompletedSale),
+    );
+  }
+
+  Future<PvSalesResponseModel> addPaymentForPartialOrder(Map<String, dynamic> mapReq) async {
+    const action = 'pavopay.intent.action.add.payment';
+    const actionResult = '$action.result';
+
+    return _startAction(
+      action: action,
+      actionResult: actionResult,
+      mapReq: mapReq,
+      isSuccess: (PvSalesResponseModel res) => _isSuccess(res, pvStatusId: PVStatusId.PaymentWaiting),
+    );
+  }
+
+  Future<PvSalesResponseModel> addPaymentAndFinalizeForPartialOrder(Map<String, dynamic> mapReq) async {
+    const action = 'pavopay.intent.action.add.payment.and.finalize.sale';
+    const actionResult = '$action.result';
+
+    return _startAction(
+      action: action,
+      actionResult: actionResult,
+      mapReq: mapReq,
+      isSuccess: (PvSalesResponseModel res) => _isSuccess(res),
+    );
+  }
+
+  Future<PvSalesResponseModel> removePaymentForPartialOrder(Map<String, dynamic> mapReq) async {
+    const action = 'pavopay.intent.action.remove.payment';
+    const actionResult = '$action.result';
+
+    return _startAction(
+      action: action,
+      actionResult: actionResult,
+      mapReq: mapReq,
+      isSuccess: (PvSalesResponseModel res) => _isSuccess(res),
+    );
+  }
+
+  Future<PvSalesResponseModel> cancelSale(Map<String, dynamic> mapReq) async {
+    const action = 'pavopay.intent.action.cancel.sale';
+    const actionResult = '$action.result';
+
+    return _startAction(
+      action: action,
+      actionResult: actionResult,
+      mapReq: mapReq,
+      isSuccess: (PvSalesResponseModel res) => _isSuccess(res, pvStatusId: PVStatusId.PaymentCancelled),
+    );
+  }
+
+  Future<PvSalesResponseModel> _startAction({
+    required String action,
+    required String actionResult,
+    required Map<String, dynamic> mapReq,
+    required bool Function(PvSalesResponseModel res) isSuccess,
+  }) async {
     final appInfo = await PackageInfo.fromPlatform();
     final completer = Completer<PvSalesResponseModel>();
 
     _listener[actionResult] = (PvSalesResponseModel res) {
-      res.ourOperationIsSuccess = _isSuccess(res, paymentStatusId: PavoPaymentStatusId.Completed);
+      res.ourOperationIsSuccess = isSuccess(res);
       res.message = _getMessageFromPaymentStatus(res);
       completer.complete(res);
     };
 
-    final requestMap = modelReq?.toJson() ?? mapReq!;
     final String appName = appInfo.appName;
     final String version = '(${appInfo.version})+${appInfo.buildNumber}';
 
-    requestMap['RefererApp'] = appName;
-    requestMap['RefererAppVersion'] = version;
+    mapReq['RefererApp'] = appName;
+    mapReq['RefererAppVersion'] = version;
 
+    final saleStr = jsonEncode(mapReq);
     AndroidIntent(
       type: 'application/json',
       package: appType.packageName,
       action: action,
       flags: [0x10000000],
       arguments: <String, dynamic>{
-        'Sale': jsonEncode(requestMap),
+        'Sale': saleStr,
         'packageName': appInfo.packageName,
       },
     ).launch();
 
-    log(jsonEncode(requestMap), name: '---------> PAVO');
+    log(saleStr, name: '---------> PAVO');
     return completer.future;
   }
 
@@ -124,49 +196,6 @@ class PavoPosPackage {
     };
 
     final requestMap = {'OrderNo': orderNo};
-
-    AndroidIntent(
-      type: 'application/json',
-      package: appType.packageName,
-      action: action,
-      flags: [0x10000000],
-      arguments: <String, dynamic>{
-        'Sale': jsonEncode(requestMap),
-        'packageName': packageName,
-      },
-    ).launch();
-
-    log(requestMap.toString(), name: '---------> PAVO');
-    return completer.future;
-  }
-
-  Future<PvSalesResponseModel> cancelSale(String orderNo) async {
-    const action = 'pavopay.intent.action.cancel.sale';
-    const actionResult = '$action.result';
-    final packageName = (await PackageInfo.fromPlatform()).packageName;
-    final completer = Completer<PvSalesResponseModel>();
-
-    _listener[actionResult] = (PvSalesResponseModel res) {
-      res.ourOperationIsSuccess = _isSuccess(res, pvStatusId: PVStatusId.PaymentCancelled);
-      completer.complete(res);
-    };
-
-    final requestMap = {
-      'OrderNo': orderNo,
-      'SkipPaymentSummary': true,
-      'EnableRefundMediatorsOnVoidFailure': false,
-      'IsVoid': true,
-      'ReceiptInformation': const PVSaleRequestReceiptInformationModel(
-        receiptImageEnabled: false,
-        receiptJsonEnabled: false,
-        receiptTextEnabled: false,
-        receiptWidth: "58mm",
-        printCustomerReceipt: true,
-        printCustomerReceiptCopy: false,
-        printMerchantReceipt: false,
-        enableExchangeRateField: false,
-      ),
-    };
 
     AndroidIntent(
       type: 'application/json',
@@ -222,23 +251,23 @@ class PavoPosPackage {
   }
 
   bool _isSuccess(PvSalesResponseModel res, {PavoPaymentStatusId? paymentStatusId, PVStatusId? pvStatusId}) {
-    assert(paymentStatusId != null || pvStatusId != null);
     try {
-      if (res.hasError == false) {
-        if (paymentStatusId != null) {
-          if (res.data != null) {
-            return res.data!.addedPayments?.firstOrNull?.statusId == paymentStatusId.id;
-          } else if (res.dataDynamic != null) {
-            return (res.dataDynamic!['AddedPayments'] as List).first['StatusId'] == paymentStatusId.id;
-          }
-        } else {
-          if (res.data != null) {
-            return res.data!.statusId == pvStatusId!.id;
-          } else if (res.dataDynamic != null) {
-            return res.dataDynamic!['Data']['StatusId'] == pvStatusId!.id;
-          }
+      if (res.hasError != false) return false;
+
+      if (paymentStatusId != null) {
+        final statusId = res.data?.addedPayments?.firstOrNull?.statusId;
+        if (statusId != null) {
+          return statusId == paymentStatusId.id;
+        } else if (res.dataDynamic != null) {
+          return (res.dataDynamic!['AddedPayments'] as List).first['StatusId'] == paymentStatusId.id;
         }
+      } else if (pvStatusId != null) {
+        return res.data?.statusId == pvStatusId.id;
+      } else if (res.data != null) {
+        final PVStatusId statusId = PVStatusId.values.firstWhere((element) => element.id == res.data!.statusId);
+        return statusId.mainStatusId == 6;
       }
+
       return false;
     } catch (e) {
       return false;
@@ -375,38 +404,4 @@ class PavoPosPackage {
   }
 
   Future startPrint() => methodChannel.invokeMethod('startPrint');
-}
-
-extension DiacriticsAwareString on String {
-  String withoutDiacriticalMarks() {
-    const diacritics = 'ÀÁÂÃÄÅàáâãäåÒÓÔÕÕÖØòóôõöøÈÉÊËèéêëðÇçÐÌÍÎÏİìíîïÙÚÛÜùúûüÑñŠšŸÿýŽžıŞşĞğ';
-    const nonDiacritics = 'AAAAAAaaaaaaOOOOOOOooooooEEEEeeeeeCcDIIIIiiiiiUUUUuuuuNnSsYyyZziSsGg';
-
-    return splitMapJoin(
-      '',
-      onNonMatch: (char) =>
-          char.isNotEmpty && diacritics.contains(char) ? nonDiacritics[diacritics.indexOf(char)] : char,
-    );
-  }
-}
-
-enum NexgoFontSize {
-  small(20, 32),
-  normal(24, 27),
-  big(28, 24);
-
-  final int value;
-  final int maxChar;
-
-  const NexgoFontSize(this.value, this.maxChar);
-}
-
-enum NexgoAlign {
-  CENTER(1),
-  RIGHT(2),
-  LEFT(3);
-
-  final int value;
-
-  const NexgoAlign(this.value);
 }

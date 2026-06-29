@@ -8,34 +8,37 @@ enum PavoAppType {
 }
 
 enum PVStatusId {
-  Suspended(1, 'Satış Askıya Alındı'),
-  PaymentWaiting(2, 'Ödeme Bekleniyor'),
-  DocumentCreating(3, 'Döküman Oluşturuluyor'),
-  DocumentPending(4, 'Döküman Bekleniyor'),
-  DocumentCreated(5, 'Döküman Oluşturuldu'),
-  Completed(6, 'Tamamlandı'),
-  Abandoned(7, 'Satıştan Vazgeçildi'),
-  DocumentFailed(8, 'Döküman Oluşturulamadı'),
-  Signing(9, 'İmzalanıyor'),
-  SigningFailed(10, 'İmzalama Başarısız'),
-  Cancalled(11, 'İptal Edildi'),
-  PaymentCancelling(12, 'Ödeme İptali Gerçekleştiriliyor'),
-  PaymentCancelled(13, 'Ödeme İptali Tamamlandı'),
-  PaymentCancelFailed(14, 'Ödeme İptali Başarısız'),
-  DocumentCancelling(15, 'Döküman İptali Gerçekleştiriliyor'),
-  DocumentCancelFailed(16, 'Döküman İptali Başarısız'),
-  DocumentCancelPending(17, 'Döküman İptali Bekleniyor'),
-  Signed(18, 'İmzalandı'),
-  ERPProcessing(19, 'ERP İşlemleri Devam Ediyor'),
-  DocumentApproved(20, 'Döküman Onaylandı'),
-  DocumentNotApproved(21, 'Döküman Onaylanmadı'),
-  InspectionPending(22, 'İnceleme Bekleniyor'),
-  UnCompletedSale(23, 'Tamamlanmamış Satış');
+  Suspended(1, 1, 'Satış Askıya Alındı'),
+  PaymentWaiting(2, 2, 'Ödeme Bekleniyor'),
+  DocumentCreating(3, 6, 'Döküman Oluşturuluyor'),
+  DocumentPending(4, 6, 'Döküman Bekleniyor'),
+  DocumentCreated(5, 6, 'Döküman Oluşturuldu'),
+  Completed(6, 6, 'Tamamlandı'),
+  Abandoned(7, 7, 'Satıştan Vazgeçildi'),
+  DocumentFailed(8, 6, 'Döküman Oluşturulamadı'),
+  Signing(9, 6, 'İmzalanıyor'),
+  SigningFailed(10, 6, 'İmzalama Başarısız'),
+  Cancalled(11, 11, 'İptal Edildi'),
+  PaymentCancelling(12, 12, 'Ödeme İptali Gerçekleştiriliyor'),
+  PaymentCancelled(13, 11, 'Ödeme İptali Tamamlandı'),
+  PaymentCancelFailed(14, 12, 'Ödeme İptali Başarısız'),
+  DocumentCancelling(15, 11, 'Döküman İptali Gerçekleştiriliyor'),
+  DocumentCancelFailed(16, 11, 'Döküman İptali Başarısız'),
+  DocumentCancelPending(17, 11, 'Döküman İptali Bekleniyor'),
+  Signed(18, 6, 'İmzalandı'),
+  ERPProcessing(19, 6, 'ERP İşlemleri Devam Ediyor'),
+  DocumentApproved(20, 6, 'Döküman Onaylandı'),
+  DocumentNotApproved(21, 6, 'Döküman Onaylanmadı'),
+  InspectionPending(22, 6, 'İnceleme Bekleniyor'),
+  UnCompletedSale(23, 23, 'Tamamlanmamış Satış'),
+  PaymentCompleted(24, 6, 'Ödeme Tamamlandı'),
+  DelaySending(99, null, 'Ödeme Tamamlandı');
 
   final int id;
+  final int? mainStatusId; // 6 olanlar işlem başarılı demek
   final String title;
 
-  const PVStatusId(this.id, this.title);
+  const PVStatusId(this.id, this.mainStatusId, this.title);
 }
 
 // Kart ekranında görüntülenmesi istenilen slot tipleridir. Gönderilmediği veya boş [] gönderildiği durumda tüm slotlar gösterilir. Geçerli slot tipleri -> “rf” Temassız, “icc” Çip, “magneticStripe” Manyetik, “qr” Karekod, “manual” Manuel.
@@ -109,4 +112,25 @@ enum PavoPaymentStatusId {
   final String title;
 
   const PavoPaymentStatusId(this.id, this.title);
+}
+
+enum NexgoFontSize {
+  small(20, 32),
+  normal(24, 27),
+  big(28, 24);
+
+  final int value;
+  final int maxChar;
+
+  const NexgoFontSize(this.value, this.maxChar);
+}
+
+enum NexgoAlign {
+  CENTER(1),
+  RIGHT(2),
+  LEFT(3);
+
+  final int value;
+
+  const NexgoAlign(this.value);
 }
