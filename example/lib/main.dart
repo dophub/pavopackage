@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final orderNo = '231e2rklo342r0${m.Random().nextInt(100000)}';
+    const orderNo = '231e2rklo342r0wrqwrqw';
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -64,15 +64,29 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            const SizedBox(height: 100),
             Text(
               resultText,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 30),
             ElevatedButton(
               onPressed: () => sale(orderNo),
               child: const Text("Sale"),
+            ),
+            ElevatedButton(
+              onPressed: () => createOrder(orderNo),
+              child: const Text("createOrder"),
+            ),
+            ElevatedButton(
+              onPressed: () => addPayment(orderNo),
+              child: const Text("addPayment"),
+            ),
+            ElevatedButton(
+              onPressed: () => removePayment(orderNo),
+              child: const Text("removePayment"),
+            ),
+            ElevatedButton(
+              onPressed: () => endPayment(orderNo),
+              child: const Text("endPayment"),
             ),
             ElevatedButton(
               onPressed: () => cancel(orderNo),
@@ -198,7 +212,25 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> cancel(String orderNo) async {
-    final res = await PavoPosPackage.instance!.cancelSale(orderNo);
+    final res = await PavoPosPackage.instance!.cancelSale(
+      {
+        'OrderNo': orderNo,
+        'SkipPaymentSummary': true,
+        'EnableRefundMediatorsOnVoidFailure': false,
+        'IsVoid': true,
+        'ReceiptInformation': const PVSaleRequestReceiptInformationModel(
+          receiptImageEnabled: false,
+          receiptJsonEnabled: false,
+          receiptTextEnabled: false,
+          receiptWidth: "58mm",
+          printCustomerReceipt: true,
+          printCustomerReceiptCopy: false,
+          printMerchantReceipt: false,
+          enableExchangeRateField: false,
+        ),
+      },
+    );
+
     resultText = res.ourOperationIsSuccess == true ? 'İade Başarılı' : 'Staış Başarısızı: ${res.message}';
     setState(() {});
     log('example log: ', name: res.toJson().toString());
@@ -230,5 +262,157 @@ class _MyHomePageState extends State<MyHomePage> {
     await PavoPosPackage.instance!.feedPaper(4);
     await PavoPosPackage.instance!.cutPaper();
     await PavoPosPackage.instance!.startPrint();
+  }
+
+  String saleNo = '';
+
+  Future<void> createOrder(orderNo) async {
+    final random = m.Random();
+    orderNo = orderNo + random.nextInt(10000).toString();
+    final res = await PavoPosPackage.instance!.createPartialOrder(
+      {
+        "OrderNo": orderNo,
+        "RefererApp": "Harici Uygulama",
+        "RefererAppVersion": "1.0.0",
+        "MainDocumentType": 1,
+        "GrossPrice": 2,
+        "TotalPrice": 2,
+        //"PriceEffect": {"Type": 2, "Rate": 10, "Amount": null},
+        "SendPhoneNotification": false,
+        "SendEMailNotification": true,
+        "NotificationPhone": "",
+        "NotificationEMail": "me@info.com",
+        "AddedSaleItems": [
+          {
+            "Name": "Gofret",
+            "IsGeneric": false,
+            "UnitCode": "KGM",
+            "TaxGroupCode": "KDV18",
+            "ItemQuantity": 1,
+            "UnitPriceAmount": 2,
+            "GrossPriceAmount": 2,
+            "TotalPriceAmount": 2,
+            "ReservedText": "TEST0001",
+            //"PriceEffect": {"Type": 1, "Rate": 10, "Amount": null}
+          }
+        ],
+        "CustomerParty": {
+          "CustomerType": 1,
+          "FirstName": "John",
+          "MiddleName": "",
+          "FamilyName": "Doe",
+          "CompanyName": "",
+          "TaxOfficeCode": "",
+          "TaxNumber": "11111111111",
+          "Phone": "",
+          "EMail": "",
+          "Country": "Türkiye",
+          "City": "Ankara",
+          "District": "Çankaya",
+          "Neighborhood": "",
+          "Address": ""
+        },
+        "AdditionalInfo": [
+          {"Key": "Test", "Value": "Test", "Print": true}
+        ]
+      },
+    );
+    saleNo = res.data!.orderNo!;
+    resultText = res.ourOperationIsSuccess == true ? 'Staış Başarılı' : 'Staış Başarısızı: ${res.message}';
+    setState(() {});
+    log('example log: ', name: res.toJson().toString());
+  }
+
+  Future<void> addPayment(orderNo) async {
+    final res = await PavoPosPackage.instance!.addPaymentForPartialOrder(
+      {
+        "FinalizeAndReturnSale": false,
+        "SaleNumber": saleNo,
+        "OrderNo": saleNo,
+        "GrossPrice": 2,
+        "SkipAmountCash": true,
+        "PaymentInformations": [
+          {
+            "Mediator": 1,
+            "Amount": 1,
+            "ExternalReferenceText": '$saleNo-1',
+          }
+        ],
+        "RefererApp": "Dev Siparişim POS",
+        "RefererAppVersion": "(1.1.8 Dev)+19",
+        "logTag": "order_code=mto52",
+        "ReceiptInformation": {
+          "ReceiptImageEnabled": true,
+          "ReceiptWidth": "58mm",
+          "PrintCustomerReceipt": true,
+          "PrintCustomerReceiptCopy": true,
+          "PrintMerchantReceipt": true
+        }
+        /*"ExternalPayments": [
+          {
+            "Type": 3,
+            "Mediator": 10,
+            "Brand": 6,
+            "ExternalReferenceText": "c5edb71f-b145-4e0c-beed-5a884a4bd08c",
+            "CardNo": null,
+            "AuthorizationCode": null,
+            "Amount": 1
+          }
+        ],*/
+      },
+    );
+    resultText = res.ourOperationIsSuccess == true ? 'Staış Başarılı' : 'Staış Başarısızı: ${res.message}';
+    setState(() {});
+    log('example log: ', name: res.toJson().toString());
+  }
+
+  Future<void> endPayment(orderNo) async {
+    final res = await PavoPosPackage.instance!.addPaymentAndFinalizeForPartialOrder(
+      {
+        "FinalizeAndReturnSale": true,
+        "SaleNumber": saleNo,
+        "OrderNo": saleNo,
+        "GrossPrice": 2,
+        "SkipAmountCash": true,
+        "PaymentInformations": [
+          {"Mediator": 1, "Amount": 1}
+        ],
+        "RefererApp": "Dev Siparişim POS",
+        "RefererAppVersion": "(1.1.8 Dev)+19",
+        "ReceiptInformation": {
+          "ReceiptImageEnabled": true,
+          "ReceiptWidth": "58mm",
+          "PrintCustomerReceipt": true,
+          "PrintCustomerReceiptCopy": false,
+          "PrintMerchantReceipt": true
+        },
+        "logTag": "order_code=mto52"
+      },
+    );
+    resultText = res.ourOperationIsSuccess == true ? 'Staış Başarılı' : 'Staış Başarısızı: ${res.message}';
+    setState(() {});
+    log('example log: ', name: res.toJson().toString());
+  }
+
+  Future<void> removePayment(orderNo) async {
+    final res = await PavoPosPackage.instance!.removePaymentForPartialOrder({
+      "SaleNumber": saleNo,
+      "OrderNo": saleNo,
+      "FinalizeAndReturnSale": false,
+      "PaymentReference": "231e2rklo342r0wrqwrqw6527-1",
+      "IsVoid": true,
+      "ReceiptInformation": {
+        "ReceiptInformation": true,
+        "ReceiptWidth": "58mm",
+        "PrintCustomerReceipt": true,
+        "PrintCustomerReceiptCopy": false,
+        "PrintMerchantReceipt": true
+      },
+      "RefererApp": "Dev Siparişim POS",
+      "RefererAppVersion": "(1.1.8 Dev)+19",
+    });
+    resultText = res.ourOperationIsSuccess == true ? 'Staış Başarılı' : 'Staış Başarısızı: ${res.message}';
+    setState(() {});
+    log('example log: ', name: res.toJson().toString());
   }
 }

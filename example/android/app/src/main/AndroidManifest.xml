@@ -1,35 +1,72 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <application
-        android:label="example"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:label="example">
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"
+            android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-            android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
             <intent-filter>
+
                 <action android:name="pavopay.intent.action.complete.sale.result" />
-                <action android:name="pavopay.intent.action.completed.sale.result" />
+                <action android:name="pavopay.intent.action.query.report.result" />
+                <action android:name="pavopay.intent.action.printOutEODCopy.result" />
+                <action android:name="pavopay.intent.action.printOutDailyEODCopy.result" />
+                <action android:name="pavopay.intent.action.start.advance.sale.result" />
+                <action android:name="pavopay.intent.action.start.current.sale.result" />
+                <action android:name="pavopay.intent.action.finalize.sale.result" />
+                <action android:name="pavopay.intent.action.jewellery.sale.result" />
+                <action android:name="pavopay.intent.action.advance.sale.result" />
+                <action android:name="pavopay.intent.action.current.sale.result" />
+                <action android:name="pavopay.intent.action.start.sale.with.items.result" />
+                <action android:name="pavopay.intent.action.add.payment.result" />
+                <action android:name="pavopay.intent.action.remove.payment.result" />
+                <action android:name="pavopay.intent.action.add.payment.and.finalize.sale.result" />
+                <action android:name="pavopay.intent.action.abandon.suspended.sale.result" />
                 <action android:name="pavopay.intent.action.cancel.sale.result" />
+                <action android:name="pavopay.intent.action.completed.sale.result" />
+                <action android:name="pavopay.intent.action.check.pending.sale.result" />
+                <action android:name="pavopay.intent.action.last.processed.sale.result" />
+                <action android:name="pavopay.intent.action.partial.return.result" />
+                <action android:name="pavopay.intent.action.get.returnable.sale.result" />
+                <action android:name="pavopay.intent.action.enter.inflight.mode.result" />
+                <action android:name="pavopay.intent.action.exit.inflight.mode.result" />
+                <action android:name="pavopay.intent.action.inflight.cancel.sale.result" />
+                <action android:name="pavopay.intent.action.login.result" />
+                <action android:name="pavopay.intent.action.login.with.pin.result" />
+                <action android:name="pavopay.intent.action.logout.result" />
+                <action android:name="pavopay.intent.action.send.offline.sales.result" />
+                <action android:name="pavopay.intent.action.perform.batch.eod.result" />
+                <action android:name="pavopay.intent.action.performEOD.result" />
+                <action android:name="pavopay.intent.action.perform.ispos.eod.result" />
                 <action android:name="pavopay.intent.action.get.device.info.result" />
+                <action android:name="pavopay.intent.action.get.turmob.info.result" />
+                <action android:name="pavopay.intent.action.get.mediators.result" />
+                <action android:name="pavopay.intent.action.print.out.result" />
+                <action android:name="pavopay.intent.action.update.terminal.data.result" />
+                <action android:name="pavopay.intent.action.reboot.device.result" />
+                <action android:name="pavopay.intent.action.enter.kiosk.mode.result" />
+                <action android:name="pavopay.intent.action.exit.kiosk.mode.result" />
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="application/json" />
@@ -48,8 +85,8 @@
          In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
     <queries>
         <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <data android:mimeType="text/plain"/>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
         </intent>
     </queries>
 </manifest>
