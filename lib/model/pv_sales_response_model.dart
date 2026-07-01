@@ -326,6 +326,7 @@ class PvSalesResponseAddedPaymentModel {
   double? convertedTotal;
   String? currencyCode;
   String? mediatorPaymentReference;
+  String? externalReference;
 
   PvSalesResponseAddedPaymentModel({
     this.id,
@@ -361,6 +362,7 @@ class PvSalesResponseAddedPaymentModel {
     this.convertedTotal,
     this.currencyCode,
     this.mediatorPaymentReference,
+    this.externalReference,
   });
 
   factory PvSalesResponseAddedPaymentModel.fromJson(Map<String, dynamic> json) => PvSalesResponseAddedPaymentModel(
@@ -403,6 +405,7 @@ class PvSalesResponseAddedPaymentModel {
         convertedTotal: json["ConvertedTotal"]?.toDouble(),
         currencyCode: json["CurrencyCode"],
         mediatorPaymentReference: json["MediatorPaymentReference"],
+        externalReference: json["ExternalReference"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -439,6 +442,7 @@ class PvSalesResponseAddedPaymentModel {
         "ConvertedTotal": convertedTotal,
         "CurrencyCode": currencyCode,
         "MediatorPaymentReference": mediatorPaymentReference,
+        "ExternalReference": externalReference,
       };
 }
 

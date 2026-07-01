@@ -212,6 +212,38 @@ class PavoPosPackage {
     return completer.future;
   }
 
+  Future<PvSalesResponseModel> getPendingSaleDetail(String orderNo, String transactionId) async {
+    const action = 'pavopay.intent.action.check.pending.sale';
+    const actionResult = '$action.result';
+    final packageName = (await PackageInfo.fromPlatform()).packageName;
+    final completer = Completer<PvSalesResponseModel>();
+
+    _listener[actionResult] = (PvSalesResponseModel res) {
+      res.ourOperationIsSuccess = _isSuccess(
+        res,
+        transactionId: transactionId,
+        paymentStatusId: PavoPaymentStatusId.Completed,
+      );
+      completer.complete(res);
+    };
+
+    final requestMap = {'OrderNo': orderNo};
+
+    AndroidIntent(
+      type: 'application/json',
+      package: appType.packageName,
+      action: action,
+      flags: [0x10000000],
+      arguments: <String, dynamic>{
+        'Sale': jsonEncode(requestMap),
+        'packageName': packageName,
+      },
+    ).launch();
+
+    log(requestMap.toString(), name: '---------> PAVO');
+    return completer.future;
+  }
+
   Future<PvSalesResponseModel> getDeviceInfo(String orderNo) async {
     const action = 'pavopay.intent.action.get.device.info';
     const actionResult = '$action.result';
@@ -250,12 +282,27 @@ class PavoPosPackage {
     return completer.future;
   }
 
-  bool _isSuccess(PvSalesResponseModel res, {PavoPaymentStatusId? paymentStatusId, PVStatusId? pvStatusId}) {
+  bool _isSuccess(
+    PvSalesResponseModel res, {
+    PavoPaymentStatusId? paymentStatusId,
+    String? transactionId,
+    PVStatusId? pvStatusId,
+  }) {
     try {
       if (res.hasError != false) return false;
 
       if (paymentStatusId != null) {
-        final statusId = res.data?.addedPayments?.firstOrNull?.statusId;
+        int? statusId;
+        if (transactionId == null) {
+          statusId = res.data?.addedPayments?.firstOrNull?.statusId;
+        } else {
+          for (PvSalesResponseAddedPaymentModel element in res.data?.addedPayments ?? []) {
+            if (element.externalReference == transactionId) {
+              statusId = element.statusId;
+            }
+          }
+        }
+
         if (statusId != null) {
           return statusId == paymentStatusId.id;
         } else if (res.dataDynamic != null) {
