@@ -183,7 +183,7 @@ class PavoPosPackage {
 
   Future<PvSalesResponseModel> getSaleDetail(
     String orderNo, {
-    required PavoPaymentStatusId? paymentStatusId,
+    PavoPaymentStatusId? paymentStatusId,
   }) async {
     const action = 'pavopay.intent.action.completed.sale';
     const actionResult = '$action.result';
