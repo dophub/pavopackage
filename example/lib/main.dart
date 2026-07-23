@@ -244,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> getDeviceInfo(String orderNo) async {
-    final res = await PavoPosPackage.instance!.getDeviceInfo(orderNo);
+    final res = await PavoPosPackage.instance!.getDeviceInfo();
     resultText = res.ourOperationIsSuccess == true ? 'İşlem Başarılı' : 'Staış Başarısız: ${res.message}';
     setState(() {});
     log('example log: ', name: res.toJson().toString());

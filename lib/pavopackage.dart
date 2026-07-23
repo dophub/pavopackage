@@ -244,7 +244,7 @@ class PavoPosPackage {
     return completer.future;
   }
 
-  Future<PvSalesResponseModel> getDeviceInfo(String orderNo) async {
+  Future<PvSalesResponseModel> getDeviceInfo() async {
     const action = 'pavopay.intent.action.get.device.info';
     const actionResult = '$action.result';
     final packageName = (await PackageInfo.fromPlatform()).packageName;
@@ -436,7 +436,7 @@ class PavoPosPackage {
   }
 
   Future<void> feedLine([String? char]) async {
-    final size = NexgoFontSize.big;
+    const size = NexgoFontSize.big;
     await appendText(' ' * size.maxChar, size: size);
   }
 
